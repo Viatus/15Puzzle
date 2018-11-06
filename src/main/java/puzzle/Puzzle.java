@@ -7,8 +7,8 @@ public class Puzzle {
     //Размер поля
     private final int size = 4;
     //Индексы пустой клетки
-    private int emptyX = size - 1;
-    private int emptyY = size - 1;
+    private int emptyX;
+    private int emptyY;
 
     //Массив элементов
     private Integer[][] field = new Integer[size][size];
@@ -23,26 +23,63 @@ public class Puzzle {
             Set<Integer> support = new HashSet<>();
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
-                    if (!(i == size - 1 & j == size - 1)) {
-                        boolean isNumberFilled = false;
-                        while (!isNumberFilled) {
-                            final Random random = new Random();
-                            int number = random.nextInt(size * size - 1) + 1;
-                            if (!support.contains(number)) {
-                                support.add(number);
-                                field[i][j] = number;
-                                isNumberFilled = true;
+                    boolean isNumberFilled = false;
+                    while (!isNumberFilled) {
+                        final Random random = new Random();
+                        int number = random.nextInt(size * size);
+                        if (!support.contains(number)) {
+                            if (number == 0) {
+                                emptyY = j;
+                                emptyX = i;
                             }
+                            support.add(number);
+                            field[i][j] = number;
+                            isNumberFilled = true;
                         }
                     }
+
                 }
             }
-            field[size - 1][size - 1] = 0;
         } while (isSolvable(field));
     }
 
+    //Конструктор, который заполняет поле на основе заданного массива
+    public Puzzle(Integer[][] field) {
+        int count = 0;
+        Set<Integer> numbers = new HashSet<>();
+        for (int i =0;i<16;i++) {
+            numbers.add(i);
+        }
+        for (Integer[] array : field) {
+            count++;
+            if (array.length !=size) {
+                throw new IllegalArgumentException();
+            }
+            for (int element: array) {
+                if (numbers.contains(element)) {
+                    numbers.remove(element);
+                } else {
+                    throw new IllegalArgumentException();
+                }
+            }
+        }
+        if (count !=size) {
+            throw new IllegalArgumentException();
+        }
+        this.field = field;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (field[i][j] == 0) {
+                    emptyX = i;
+                    emptyY = j;
+                    return;
+                }
+            }
+        }
+    }
+
     //Проверка сгенерированного поля на решимость
-    public boolean isSolvable(Integer[][] field) {
+    private boolean isSolvable(Integer[][] field) {
         int sum = size;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -111,46 +148,19 @@ public class Puzzle {
         return true;
     }
 
-    public static void main(String[] args) {
-        Puzzle fi = new Puzzle();
-        Integer[][] f = fi.getField();
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                System.out.print(f[i][j] + " ");
+    public boolean isSolved() {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (field[i][j] != i * 4 + j + 1 && (i != size - 1 || j != size - 1)) {
+                    return false;
+                } else {
+                    if (i == size - 1 && j == size - 1 && field[i][j] != 0) {
+                        return false;
+                    }
+                }
             }
-            System.out.println();
         }
-        System.out.println();
-        fi.moveDown(2);
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                System.out.print(f[i][j] + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-        fi.moveUp(2);
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                System.out.print(f[i][j] + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-        fi.moveRight(2);
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                System.out.print(f[i][j] + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-        fi.moveLeft(2);
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                System.out.print(f[i][j] + " ");
-            }
-            System.out.println();
-        }
+        return true;
     }
+
 }
