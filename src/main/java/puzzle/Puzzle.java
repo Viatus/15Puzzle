@@ -1,7 +1,5 @@
 package puzzle;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.util.*;
 
 //Класс поля 
@@ -42,7 +40,7 @@ public class Puzzle {
 
                 }
             }
-        } while (isSolvable(field));
+        } while (!isSolvable());
     }
 
     //Конструктор, который заполняет поле на основе заданного массива
@@ -68,7 +66,11 @@ public class Puzzle {
         if (count != size) {
             throw new IllegalArgumentException();
         }
-        this.field = field;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                this.field[i][j] = field[i][j];
+            }
+        }
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if (field[i][j] == 0) {
@@ -81,20 +83,20 @@ public class Puzzle {
     }
 
     //Проверка сгенерированного поля на решимость
-    private boolean isSolvable(Integer[][] field) {
-        int sum = size;
+    public boolean isSolvable() {
+        int sum = 0;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 for (int k = i; k < size; k++) {
-                    for (int h = j; h < size; h++) {
-                        if (field[i][j] > field[k][h]) {
+                    for (int h = k == i ? j + 1 : 0; h < size; h++) {
+                        if (field[i][j] > field[k][h] && field[k][h] != 0) {
                             sum++;
                         }
                     }
                 }
             }
         }
-        return sum % 2 == 0;
+        return (sum + emptyX + 1) % 2 == 0;
     }
 
     //Перемещение на заданной количество клеток, например moveUp - передвинуть ненулевые клетки вверх
@@ -226,5 +228,49 @@ public class Puzzle {
             }
         }
         return linearConflict;
+    }
+
+    public String toString() {
+        String string = "";
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                string += field[i][j] + " ";
+            }
+            string += "\n";
+        }
+        return string;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        Puzzle other = (Puzzle) obj;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (!field[i][j].equals(other.getField()[i][j])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 0;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                result += (i + j) * field[i][j];
+            }
+        }
+        return result;
     }
 }

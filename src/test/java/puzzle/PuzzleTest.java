@@ -104,8 +104,8 @@ public class PuzzleTest {
         input[3][1] = 14;
         input[3][2] = 15;
         input[3][3] = 0;
-        Puzzle puzlle = new Puzzle(input);
-        assertEquals(14, puzlle.getEstimateMovesToEnd());
+        Puzzle puzzle = new Puzzle(input);
+        assertEquals(14, puzzle.getEstimateMovesToEnd());
 
     }
 }
