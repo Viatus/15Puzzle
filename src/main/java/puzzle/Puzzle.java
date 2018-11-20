@@ -1,5 +1,6 @@
 package puzzle;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 //Класс поля 
@@ -76,9 +77,11 @@ public class Puzzle {
                 if (field[i][j] == 0) {
                     emptyX = i;
                     emptyY = j;
-                    return;
                 }
             }
+        }
+        if (!isSolvable()) {
+            throw new IllegalArgumentException();
         }
     }
 
@@ -152,6 +155,29 @@ public class Puzzle {
         return true;
     }
 
+    //Получение множества всех возможных ходов
+    public Set<Puzzle> getNeighbours() {
+        Set<Puzzle> neighbours = new HashSet<>();
+        Puzzle support = new Puzzle(field);
+        if (support.moveRight(1)) {
+            neighbours.add(support);
+        }
+        support = new Puzzle(field);
+        if (support.moveLeft(1)) {
+            neighbours.add(support);
+        }
+        support = new Puzzle(field);
+        if (support.moveUp(1)) {
+            neighbours.add(support);
+        }
+        support = new Puzzle(field);
+        if (support.moveDown(1)) {
+            neighbours.add(support);
+        }
+        return neighbours;
+    }
+
+    //Проверка решонности головомки
     public boolean isSolved() {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -167,6 +193,7 @@ public class Puzzle {
         return true;
     }
 
+    //Приблизительная оценка количество ходов до решения головоломки. Состоит из манхеттенского расстояния, линейного конфликта и углового конфликта
     public int getEstimateMovesToEnd() {
         return getManhattanDistance() + getLinearConflict() + getCornerConflict();
     }
