@@ -12,7 +12,7 @@ public class SolverFrame extends JFrame {
 
     private void initMainPanel() {
         puzzlePanel = new PuzzlePanel();
-        puzzlePanel.setPreferredSize(new Dimension(680,240));
+        puzzlePanel.setPreferredSize(new Dimension(405,240));
         puzzlePanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
     }
 
@@ -36,12 +36,12 @@ public class SolverFrame extends JFrame {
 
     public SolverFrame(String s) {
         super(s);
-        setSize(650, 270);
+        setSize(405, 270);
         this.setLayout(null);
         initMainPanel();
         setVisible(true);
         initListeners();
-        puzzlePanel.setBounds(0,0,650,240);
+        puzzlePanel.setBounds(0,0,405,240);
         add(puzzlePanel);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setMaximumSize(getSize());

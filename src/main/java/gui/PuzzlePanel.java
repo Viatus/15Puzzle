@@ -16,7 +16,6 @@ public class PuzzlePanel extends JPanel {
 
     private Puzzle puzzle;
 
-    private JTextField inputField[];
     private JTextField field[];
 
     private JButton generateRandom;
@@ -31,33 +30,33 @@ public class PuzzlePanel extends JPanel {
             for (int j = 0; j < 4; j++) {
                 Integer number = puzzle.getField()[i][j];
                 if (number != 0) {
-                    inputField[i * 4 + j].setText(number.toString());
+                    field[i * 4 + j].setText(number.toString());
                 } else {
-                    inputField[i * 4 + j].setText("");
+                    field[i * 4 + j].setText("");
                 }
             }
         }
     }
 
     private void onSolvePuzzle() {
-        Integer[][] field = new Integer[4][4];
+        Integer[][] inputField = new Integer[4][4];
         Set<String> allowed = new HashSet<>();
         allowed.addAll(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", ""));
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                if (!allowed.contains(inputField[i * 4 + j].getText())) {
+                if (!allowed.contains(field[i * 4 + j].getText())) {
                     new JOptionPane().showMessageDialog(null, "Вы ввели запрщенный символ", "Ошибка", JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
-                if (inputField[i * 4 + j].getText().equals("")) {
-                    field[i][j] = 0;
+                if (field[i * 4 + j].getText().equals("")) {
+                    inputField[i][j] = 0;
                 } else {
-                    field[i][j] = Integer.valueOf(inputField[i * 4 + j].getText());
+                    inputField[i][j] = Integer.valueOf(field[i * 4 + j].getText());
                 }
             }
         }
         try {
-            puzzle = new Puzzle(field);
+            puzzle = new Puzzle(inputField);
         } catch (IllegalArgumentException e) {
             new JOptionPane().showMessageDialog(null, "Введенная вами комбинация нерешаема", "Ошибка", JOptionPane.INFORMATION_MESSAGE);
             return;
@@ -68,7 +67,6 @@ public class PuzzlePanel extends JPanel {
 
     private void onShowSolution() {
         for (Puzzle state : solution) {
-
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 4; j++) {
                     Integer number = state.getField()[i][j];
@@ -78,6 +76,11 @@ public class PuzzlePanel extends JPanel {
                         field[i * 4 + j].setText("");
                     }
                 }
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -98,21 +101,11 @@ public class PuzzlePanel extends JPanel {
         showSolution.setEnabled(false);
         showSolution.addActionListener(e -> onShowSolution());
         add(showSolution);
-        inputField = new JTextField[16];
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                inputField[i * 4 + j] = new JTextField();
-                inputField[i * 4 + j].setBounds(402 + j * 60, i * 60, 60, 60);
-                inputField[i * 4 + j].setHorizontalAlignment(JTextField.CENTER);
-                add(inputField[i * 4 + j]);
-            }
-        }
         field = new JTextField[16];
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 field[i * 4 + j] = new JTextField();
                 field[i * 4 + j].setBounds(j * 60, i * 60, 60, 60);
-                field[i * 4 + j].setEditable(false);
                 field[i * 4 + j].setHorizontalAlignment(JTextField.CENTER);
                 add(field[i * 4 + j]);
             }
