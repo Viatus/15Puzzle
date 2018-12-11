@@ -12,9 +12,9 @@ public class Puzzle {
     private int emptyY;
 
     //Массив элементов
-    private Integer[][] field = new Integer[size][size];
+    private Integer[] field = new Integer[size * size];
 
-    public Integer[][] getField() {
+    public Integer[] getField() {
         return field;
     }
 
@@ -22,62 +22,81 @@ public class Puzzle {
     public Puzzle() {
         do {
             Set<Integer> support = new HashSet<>();
-            for (int i = 0; i < size; i++) {
-                for (int j = 0; j < size; j++) {
-                    boolean isNumberFilled = false;
-                    while (!isNumberFilled) {
-                        final Random random = new Random();
-                        int number = random.nextInt(size * size);
-                        if (!support.contains(number)) {
-                            if (number == 0) {
-                                emptyY = j;
-                                emptyX = i;
-                            }
-                            support.add(number);
-                            field[i][j] = number;
-                            isNumberFilled = true;
+            for (int i = 0; i < size * size; i++) {
+                boolean isNumberFilled = false;
+                while (!isNumberFilled) {
+                    final Random random = new Random();
+                    int number = random.nextInt(size * size);
+                    if (!support.contains(number)) {
+                        if (number == 0) {
+                            emptyY = i % size;
+                            emptyX = i / size;
                         }
+                        support.add(number);
+                        field[i] = number;
+                        isNumberFilled = true;
                     }
-
                 }
             }
+            /*for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    if (i != size - 1 || j != size - 1) {
+                        field[i][j] = i * 4 + j + 1;
+                    } else {
+                        field[i][j] = 0;
+                    }
+                }
+            }
+            emptyX = size - 1;
+            emptyY = size - 1;
+            final Random random = new Random();
+            int amountOfTurns = random.nextInt(100);
+            for (int i = 0; i < amountOfTurns; i++) {
+                int turn = random.nextInt(4);
+                int amountOfBlocks = random.nextInt(3) + 1;
+                switch (turn) {
+                    case 0:
+                        moveDown(1);
+                        break;
+                    case 1:
+                        moveUp(1);
+                        break;
+                    case 2:
+                        moveLeft(1);
+                        break;
+                    case 3:
+                        moveRight(1);
+                        break;
+                }
+            }*/
         } while (!isSolvable());
     }
 
     //Конструктор, который заполняет поле на основе заданного массива
-    public Puzzle(Integer[][] field) {
+    public Puzzle(Integer[] field) {
         int count = 0;
         Set<Integer> numbers = new HashSet<>();
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < size * size; i++) {
             numbers.add(i);
         }
-        for (Integer[] array : field) {
+        for (int number : field) {
             count++;
-            if (array.length != size) {
+            if (numbers.contains(number)) {
+                numbers.remove(number);
+            } else {
                 throw new IllegalArgumentException();
             }
-            for (int element : array) {
-                if (numbers.contains(element)) {
-                    numbers.remove(element);
-                } else {
-                    throw new IllegalArgumentException();
-                }
-            }
         }
-        if (count != size) {
+        if (count != size * size) {
             throw new IllegalArgumentException();
         }
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                this.field[i][j] = field[i][j];
-            }
+        for (int i = 0; i < size * size; i++) {
+            this.field[i] = field[i];
         }
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (field[i][j] == 0) {
-                    emptyX = i;
-                    emptyY = j;
-                }
+        for (int i = 0; i < size * size; i++) {
+            if (field[i] == 0) {
+                emptyX = i / size;
+                emptyY = i % size;
             }
         }
         if (!isSolvable()) {
@@ -86,15 +105,14 @@ public class Puzzle {
     }
 
     //Проверка сгенерированного поля на решимость
+
     public boolean isSolvable() {
         int sum = 0;
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                for (int k = i; k < size; k++) {
-                    for (int h = k == i ? j + 1 : 0; h < size; h++) {
-                        if (field[i][j] > field[k][h] && field[k][h] != 0) {
-                            sum++;
-                        }
+        for (int i = 0; i < size * size; i++) {
+            for (int k = i/size; k < size; k++) {
+                for (int h = k == i / size ? i % size + 1 : 0; h < size; h++) {
+                    if (field[i] > field[k * size + h] && field[k * size + h] != 0) {
+                        sum++;
                     }
                 }
             }
@@ -106,8 +124,8 @@ public class Puzzle {
     public boolean moveUp(int number) {
         if (emptyX + number < size) {
             for (int i = emptyX; i < number + emptyX; i++) {
-                field[i][emptyY] = field[i + 1][emptyY];
-                field[i + 1][emptyY] = 0;
+                field[i * 4 + emptyY] = field[(i + 1) * 4 + emptyY];
+                field[(i + 1) * 4 + emptyY] = 0;
             }
         } else {
             return false;
@@ -119,8 +137,8 @@ public class Puzzle {
     public boolean moveDown(int number) {
         if (emptyX - number >= 0) {
             for (int i = emptyX; i > emptyX - number; i--) {
-                field[i][emptyY] = field[i - 1][emptyY];
-                field[i - 1][emptyY] = 0;
+                field[i * 4 + emptyY] = field[(i - 1) * 4 + emptyY];
+                field[(i - 1) * 4 + emptyY] = 0;
             }
         } else {
             return false;
@@ -132,8 +150,8 @@ public class Puzzle {
     public boolean moveLeft(int number) {
         if (emptyY + number < size) {
             for (int i = emptyY; i < emptyY + number; i++) {
-                field[emptyX][i] = field[emptyX][i + 1];
-                field[emptyX][i + 1] = 0;
+                field[emptyX * 4 + i] = field[emptyX * 4 + i + 1];
+                field[emptyX * 4 + i + 1] = 0;
             }
         } else {
             return false;
@@ -145,8 +163,8 @@ public class Puzzle {
     public boolean moveRight(int number) {
         if (emptyY - number >= 0) {
             for (int i = emptyY; i > emptyY - number; i--) {
-                field[emptyX][i] = field[emptyX][i - 1];
-                field[emptyX][i - 1] = 0;
+                field[emptyX * 4 + i] = field[emptyX * 4 + i - 1];
+                field[emptyX * 4 + i - 1] = 0;
             }
         } else {
             return false;
@@ -179,14 +197,12 @@ public class Puzzle {
 
     //Проверка решонности головомки
     public boolean isSolved() {
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (field[i][j] != i * 4 + j + 1 && (i != size - 1 || j != size - 1)) {
+        for (int i = 0; i < size * size; i++) {
+            if (field[i] != i + 1 && (i != size * size - 1)) {
+                return false;
+            } else {
+                if (i == size * size - 1 && field[i] != 0) {
                     return false;
-                } else {
-                    if (i == size - 1 && j == size - 1 && field[i][j] != 0) {
-                        return false;
-                    }
                 }
             }
         }
@@ -195,18 +211,15 @@ public class Puzzle {
 
     //Приблизительная оценка количество ходов до решения головоломки. Состоит из манхеттенского расстояния, линейного конфликта и углового конфликта
     public int getEstimateMovesToEnd() {
-        return getManhattanDistance() + getLinearConflict() + getCornerConflict();
+        return getManhattanDistance()/* + getLinearConflict() + getCornerConflict()*/;
     }
+
 
     private int getManhattanDistance() {
         int distance = 0;
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (field[i][j] != 0) {
-                    distance += Math.abs(i - (field[i][j] - 1) / 4) + Math.abs(j - (field[i][j] - 1) % 4);
-                } else {
-                    distance += Math.abs(i - size + 1) + Math.abs(j - size + 1);
-                }
+        for (int i = 0; i < size*size; i++) {
+            if (field[i] != 0) {
+                distance += Math.abs(i / size - (field[i] - 1) / size) + Math.abs(i % size - (field[i] - 1) % size);
             }
         }
         return distance;
@@ -224,17 +237,17 @@ public class Puzzle {
 
     private int getCornerConflict() {
         int cornerConflict = 0;
-        if (field[0][1] == 2 && field[1][0] == size + 1 && field[0][0] != 1) {
+        if (field[1] == 2 && field[size] == size + 1 && field[0] != 1) {
             if (getLinearConflictForCell(0, 1) == 0 && getLinearConflictForCell(1, 0) == 0) {
                 cornerConflict += 2;
             }
         }
-        if (field[0][size - 2] == size - 1 && field[1][size - 1] == size + size && field[0][size - 1] != size) {
+        if (field[size - 2] == size - 1 && field[2 * size - 1] == 2 * size && field[size - 1] != size) {
             if (getLinearConflictForCell(0, size - 2) == 0 && getLinearConflictForCell(1, size - 1) == 0) {
                 cornerConflict += 2;
             }
         }
-        if (field[size - 2][0] == (size - 2) * size + 1 && field[size - 1][1] == (size - 1) * size + 2 && field[size - 1][0] != (size - 1) * size + 1) {
+        if (field[(size - 2) * size] == (size - 2) * size + 1 && field[(size - 1) * size + 1] == (size - 1) * size + 2 && field[(size - 1) * size] != (size - 1) * size + 1) {
             if (getLinearConflictForCell(size - 2, 0) == 0 && getLinearConflictForCell(size - 1, 1) == 0) {
                 cornerConflict += 2;
             }
@@ -245,12 +258,12 @@ public class Puzzle {
     private int getLinearConflictForCell(int currentI, int currentJ) {
         int linearConflict = 0;
         for (int k = currentI + 1; k < size; k++) {
-            if (field[currentI][currentJ] > field[k][currentJ] && (field[k][currentJ] - 1) % 4 == currentJ && (field[currentI][currentJ] - 1) % 4 == currentJ) {
+            if (field[currentI * 4 + currentJ] > field[k * 4 + currentJ] && (field[k * 4 + currentJ] - 1) % 4 == currentJ && (field[currentI * 4 + currentJ] - 1) % 4 == currentJ) {
                 linearConflict += 2;
             }
         }
         for (int k = currentJ + 1; k < size; k++) {
-            if (field[currentI][currentJ] > field[currentI][k] && (field[currentI][k] - 1) / 4 == currentI && (field[currentI][currentJ] - 1) / 4 == currentI) {
+            if (field[currentI * 4 + currentJ] > field[currentI * 4 + k] && (field[currentI * 4 + k] - 1) / 4 == currentI && (field[currentI * 4 + currentJ] - 1) / 4 == currentI) {
                 linearConflict += 2;
             }
         }
@@ -258,14 +271,14 @@ public class Puzzle {
     }
 
     public String toString() {
-        String string = "";
+        StringBuilder string = new StringBuilder();
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                string += field[i][j] + " ";
+                string.append(field[i * size + j]).append(" ");
             }
-            string += "\n";
+            string.append("\n");
         }
-        return string;
+        return string.toString();
     }
 
     @Override
@@ -280,23 +293,14 @@ public class Puzzle {
             return false;
         }
         Puzzle other = (Puzzle) obj;
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (!field[i][j].equals(other.getField()[i][j])) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return Arrays.deepEquals(this.field, other.getField());
     }
 
     @Override
     public int hashCode() {
         int result = 0;
         for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                result += (i + j) * field[i][j];
-            }
+            result += i * field[i];
         }
         return result;
     }

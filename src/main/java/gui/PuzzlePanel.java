@@ -4,13 +4,8 @@ import puzzle.Puzzle;
 import solver.Solver;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class PuzzlePanel extends JPanel {
 
@@ -20,15 +15,16 @@ public class PuzzlePanel extends JPanel {
 
     private JButton generateRandom;
     private JButton solvePuzzle;
-    private JButton showSolution;
+    private JButton showTurn;
 
     private List<Puzzle> solution;
+    private int currentTurn;
 
     private void onGenerateRandom() {
         puzzle = new Puzzle();
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                Integer number = puzzle.getField()[i][j];
+                Integer number = puzzle.getField()[i * 4 + j];
                 if (number != 0) {
                     field[i * 4 + j].setText(number.toString());
                 } else {
@@ -39,7 +35,7 @@ public class PuzzlePanel extends JPanel {
     }
 
     private void onSolvePuzzle() {
-        Integer[][] inputField = new Integer[4][4];
+        Integer[] inputField = new Integer[16];
         Set<String> allowed = new HashSet<>();
         allowed.addAll(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", ""));
         for (int i = 0; i < 4; i++) {
@@ -49,9 +45,9 @@ public class PuzzlePanel extends JPanel {
                     return;
                 }
                 if (field[i * 4 + j].getText().equals("")) {
-                    inputField[i][j] = 0;
+                    inputField[i * 4 + j] = 0;
                 } else {
-                    inputField[i][j] = Integer.valueOf(field[i * 4 + j].getText());
+                    inputField[i * 4 + j] = Integer.valueOf(field[i * 4 + j].getText());
                 }
             }
         }
@@ -62,26 +58,25 @@ public class PuzzlePanel extends JPanel {
             return;
         }
         solution = Solver.getPuzzleSolution(puzzle);
-        showSolution.setEnabled(true);
+        showTurn.setEnabled(true);
+        currentTurn = 0;
     }
 
-    private void onShowSolution() {
-        for (Puzzle state : solution) {
-            for (int i = 0; i < 4; i++) {
-                for (int j = 0; j < 4; j++) {
-                    Integer number = state.getField()[i][j];
-                    if (number != 0) {
-                        field[i * 4 + j].setText(number.toString());
-                    } else {
-                        field[i * 4 + j].setText("");
-                    }
+    private void onShowTurn() {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                Integer number = solution.get(currentTurn).getField()[i * 4 + j];
+                if (number != 0) {
+                    field[i * 4 + j].setText(number.toString());
+                } else {
+                    field[i * 4 + j].setText("");
                 }
             }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        }
+        if (currentTurn < solution.size() - 1) {
+            currentTurn++;
+        } else {
+            currentTurn = 0;
         }
     }
 
@@ -96,11 +91,11 @@ public class PuzzlePanel extends JPanel {
         solvePuzzle.setBounds(241, 81, 160, 80);
         solvePuzzle.addActionListener(e -> onSolvePuzzle());
         add(solvePuzzle);
-        showSolution = new JButton("Показать решение");
-        showSolution.setBounds(241, 161, 160, 80);
-        showSolution.setEnabled(false);
-        showSolution.addActionListener(e -> onShowSolution());
-        add(showSolution);
+        showTurn = new JButton("Ход");
+        showTurn.setBounds(241, 161, 160, 80);
+        showTurn.setEnabled(false);
+        showTurn.addActionListener(e -> onShowTurn());
+        add(showTurn);
         field = new JTextField[16];
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {

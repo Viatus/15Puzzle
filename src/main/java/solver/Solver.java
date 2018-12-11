@@ -15,7 +15,7 @@ public class Solver {
         costSoFar.put(puzzle, 0);
         Map<Puzzle, Puzzle> cameFrom = new HashMap<>();
         cameFrom.put(puzzle, null);
-        Queue<Puzzle> open = new PriorityQueue<Puzzle>(Comparator.comparingInt(puzzle1 -> costSoFar.get(puzzle1) + puzzle1.getEstimateMovesToEnd()));
+        Queue<Puzzle> open = new PriorityQueue<>(Comparator.comparingInt(puzzle1 -> puzzle1.getEstimateMovesToEnd() + costSoFar.get(puzzle1)));
         open.add(puzzle);
         System.out.println(puzzle.getEstimateMovesToEnd());
         while (!open.isEmpty()) {
@@ -33,10 +33,12 @@ public class Solver {
                 return reversedSolution;
             }
             closed.add(current);
-            List<Puzzle> possibilities= new ArrayList<>(current.getNeighbours());
-            Collections.shuffle(possibilities);
+            List<Puzzle> possibilities = new ArrayList<>(current.getNeighbours());
             for (Puzzle neighbour : possibilities) {
-                if (!closed.contains(neighbour) && !open.contains(neighbour)) {
+                if (closed.contains(neighbour)) {
+                    continue;
+                }
+                if (!open.contains(neighbour)) {
                     costSoFar.put(neighbour, costSoFar.get(current) + 1);
                     open.add(neighbour);
                     cameFrom.put(neighbour, current);
@@ -53,31 +55,4 @@ public class Solver {
         return Collections.singletonList(puzzle);
     }
 
-    /*public static void main(String[] args) {
-        Integer[][] input = new Integer[4][4];
-        input[0][0] = 3;
-        input[0][1] = 1;
-        input[0][2] = 2;
-        input[0][3] = 4;
-        input[1][0] = 5;
-        input[1][1] = 6;
-        input[1][2] = 7;
-        input[1][3] = 8;
-        input[2][0] = 9;
-        input[2][1] = 10;
-        input[2][2] = 11;
-        input[2][3] = 12;
-        input[3][0] = 13;
-        input[3][1] = 14;
-        input[3][2] = 15;
-        input[3][3] = 0;
-        Puzzle puzzle = new Puzzle(input);
-        for (Integer[] array : puzzle.getField()) {
-            for (int element : array) {
-                System.out.print(element + " ");
-            }
-            System.out.println();
-        }
-        System.out.println(getPuzzleSolution(puzzle));
-    }*/
 }
