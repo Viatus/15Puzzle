@@ -17,7 +17,6 @@ public class Solver {
         cameFrom.put(puzzle, null);
         Queue<Puzzle> open = new PriorityQueue<>(Comparator.comparingInt(puzzle1 -> puzzle1.getEstimateMovesToEnd() + costSoFar.get(puzzle1)));
         open.add(puzzle);
-        System.out.println(puzzle.getEstimateMovesToEnd());
         while (!open.isEmpty()) {
             Puzzle current = open.poll();
             if (current.isSolved()) {
@@ -33,21 +32,16 @@ public class Solver {
                 return reversedSolution;
             }
             closed.add(current);
-            List<Puzzle> possibilities = new ArrayList<>(current.getNeighbours());
-            for (Puzzle neighbour : possibilities) {
-                if (closed.contains(neighbour)) {
-                    continue;
-                }
-                if (!open.contains(neighbour)) {
+            for (Puzzle neighbour : current.getNeighbours()) {
+                if (!costSoFar.containsKey(neighbour)) {
                     costSoFar.put(neighbour, costSoFar.get(current) + 1);
                     open.add(neighbour);
                     cameFrom.put(neighbour, current);
                 } else {
-                    if (closed.contains(neighbour) || open.contains(neighbour)) {
-                        if (costSoFar.get(current) + 1 < costSoFar.get(neighbour)) {
-                            costSoFar.put(neighbour, costSoFar.get(current) + 1);
-                            cameFrom.put(neighbour, current);
-                        }
+                    if (costSoFar.get(current) + 1 < costSoFar.get(neighbour)) {
+                        costSoFar.put(neighbour, costSoFar.get(current) + 1);
+                        cameFrom.put(neighbour, current);
+                        open.add(neighbour);
                     }
                 }
             }

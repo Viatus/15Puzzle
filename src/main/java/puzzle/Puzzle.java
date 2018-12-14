@@ -12,9 +12,9 @@ public class Puzzle {
     private int emptyY;
 
     //Массив элементов
-    private Integer[] field = new Integer[size * size];
+    private int[] field = new int[size * size];
 
-    public Integer[] getField() {
+    public int[] getField() {
         return field;
     }
 
@@ -38,42 +38,12 @@ public class Puzzle {
                     }
                 }
             }
-            /*for (int i = 0; i < size; i++) {
-                for (int j = 0; j < size; j++) {
-                    if (i != size - 1 || j != size - 1) {
-                        field[i][j] = i * 4 + j + 1;
-                    } else {
-                        field[i][j] = 0;
-                    }
-                }
-            }
-            emptyX = size - 1;
-            emptyY = size - 1;
-            final Random random = new Random();
-            int amountOfTurns = random.nextInt(100);
-            for (int i = 0; i < amountOfTurns; i++) {
-                int turn = random.nextInt(4);
-                int amountOfBlocks = random.nextInt(3) + 1;
-                switch (turn) {
-                    case 0:
-                        moveDown(1);
-                        break;
-                    case 1:
-                        moveUp(1);
-                        break;
-                    case 2:
-                        moveLeft(1);
-                        break;
-                    case 3:
-                        moveRight(1);
-                        break;
-                }
-            }*/
+
         } while (!isSolvable());
     }
 
     //Конструктор, который заполняет поле на основе заданного массива
-    public Puzzle(Integer[] field) {
+    public Puzzle(int[] field) {
         int count = 0;
         Set<Integer> numbers = new HashSet<>();
         for (int i = 0; i < size * size; i++) {
@@ -90,9 +60,7 @@ public class Puzzle {
         if (count != size * size) {
             throw new IllegalArgumentException();
         }
-        for (int i = 0; i < size * size; i++) {
-            this.field[i] = field[i];
-        }
+        System.arraycopy(field, 0, this.field, 0, size * size);
         for (int i = 0; i < size * size; i++) {
             if (field[i] == 0) {
                 emptyX = i / size;
@@ -104,12 +72,22 @@ public class Puzzle {
         }
     }
 
-    //Проверка сгенерированного поля на решимость
+    //Конструктор копирования
+    private Puzzle(Puzzle puzzle) {
+        System.arraycopy(puzzle.getField(), 0, this.field, 0, size * size);
+        for (int i = 0; i < size * size; i++) {
+            if (field[i] == 0) {
+                emptyX = i / size;
+                emptyY = i % size;
+            }
+        }
+    }
 
+    //Проверка сгенерированного поля на решимость
     public boolean isSolvable() {
         int sum = 0;
         for (int i = 0; i < size * size; i++) {
-            for (int k = i/size; k < size; k++) {
+            for (int k = i / size; k < size; k++) {
                 for (int h = k == i / size ? i % size + 1 : 0; h < size; h++) {
                     if (field[i] > field[k * size + h] && field[k * size + h] != 0) {
                         sum++;
@@ -173,22 +151,22 @@ public class Puzzle {
         return true;
     }
 
-    //Получение множества всех возможных ходов
-    public Set<Puzzle> getNeighbours() {
-        Set<Puzzle> neighbours = new HashSet<>();
-        Puzzle support = new Puzzle(field);
+    //Получение списка всех возможных ходов
+    public List<Puzzle> getNeighbours() {
+        List<Puzzle> neighbours = new ArrayList<>();
+        Puzzle support = new Puzzle(this);
         if (support.moveRight(1)) {
             neighbours.add(support);
         }
-        support = new Puzzle(field);
+        support = new Puzzle(this);
         if (support.moveLeft(1)) {
             neighbours.add(support);
         }
-        support = new Puzzle(field);
+        support = new Puzzle(this);
         if (support.moveUp(1)) {
             neighbours.add(support);
         }
-        support = new Puzzle(field);
+        support = new Puzzle(this);
         if (support.moveDown(1)) {
             neighbours.add(support);
         }
@@ -211,13 +189,13 @@ public class Puzzle {
 
     //Приблизительная оценка количество ходов до решения головоломки. Состоит из манхеттенского расстояния, линейного конфликта и углового конфликта
     public int getEstimateMovesToEnd() {
-        return getManhattanDistance()/* + getLinearConflict() + getCornerConflict()*/;
+        return getManhattanDistance() + getLinearConflict() + getCornerConflict();
     }
 
 
     private int getManhattanDistance() {
         int distance = 0;
-        for (int i = 0; i < size*size; i++) {
+        for (int i = 0; i < size * size; i++) {
             if (field[i] != 0) {
                 distance += Math.abs(i / size - (field[i] - 1) / size) + Math.abs(i % size - (field[i] - 1) % size);
             }
@@ -293,15 +271,16 @@ public class Puzzle {
             return false;
         }
         Puzzle other = (Puzzle) obj;
-        return Arrays.deepEquals(this.field, other.getField());
+        for (int i = 0; i < size * size; i++) {
+            if (this.getField()[i] != other.getField()[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = 0;
-        for (int i = 0; i < size; i++) {
-            result += i * field[i];
-        }
-        return result;
+        return Arrays.hashCode(field);
     }
 }
