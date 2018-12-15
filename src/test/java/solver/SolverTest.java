@@ -4,6 +4,7 @@ import org.junit.Test;
 import puzzle.Puzzle;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -22,47 +23,47 @@ public class SolverTest {
         List<Puzzle> solution = Solver.getPuzzleSolution(new Puzzle(input));
         List<Puzzle> expectedSolution = new ArrayList<>();
         Puzzle currentStep = new Puzzle(input);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveDown(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveDown(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveRight(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveDown(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveRight(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveRight(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveUp(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveLeft(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveDown(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveLeft(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveUp(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveRight(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveRight(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveDown(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveLeft(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveLeft(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveUp(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveLeft(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveUp(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         currentStep.moveUp(1);
-        expectedSolution.add(new Puzzle(currentStep.getField()));
+        expectedSolution.add(new Puzzle(currentStep));
         assertTrue(solution.get(solution.size()-1).isSolved());
         assertEquals(solution,expectedSolution);
 
@@ -85,6 +86,9 @@ public class SolverTest {
         solution = Solver.getPuzzleSolution(new Puzzle(input));
         assertTrue(solution.get(solution.size()-1).isSolved());
         assertEquals(solution.size(),47);
+
+        solution = Solver.getPuzzleSolution(new Puzzle());
+        assertTrue(solution.get(solution.size()-1).isSolved());
     }
 
 }

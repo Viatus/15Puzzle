@@ -73,7 +73,7 @@ public class Puzzle {
     }
 
     //Конструктор копирования
-    private Puzzle(Puzzle puzzle) {
+    public Puzzle(Puzzle puzzle) {
         System.arraycopy(puzzle.getField(), 0, this.field, 0, size * size);
         for (int i = 0; i < size * size; i++) {
             if (field[i] == 0) {

@@ -41,7 +41,9 @@ public class Solver {
                     if (costSoFar.get(current) + 1 < costSoFar.get(neighbour)) {
                         costSoFar.put(neighbour, costSoFar.get(current) + 1);
                         cameFrom.put(neighbour, current);
-                        open.add(neighbour);
+                        if (closed.contains(neighbour)) {
+                            open.add(neighbour);
+                        }
                     }
                 }
             }
