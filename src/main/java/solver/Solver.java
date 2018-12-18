@@ -43,6 +43,7 @@ public class Solver {
                         cameFrom.put(neighbour, current);
                         if (closed.contains(neighbour)) {
                             open.add(neighbour);
+                            closed.remove(neighbour);
                         }
                     }
                 }

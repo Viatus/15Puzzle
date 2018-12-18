@@ -189,7 +189,7 @@ public class Puzzle {
 
     //Приблизительная оценка количество ходов до решения головоломки. Состоит из манхеттенского расстояния, линейного конфликта и углового конфликта
     public int getEstimateMovesToEnd() {
-        return getManhattanDistance() + getLinearConflict() + getCornerConflict();
+        return getManhattanDistance();
     }
 
 
@@ -203,61 +203,7 @@ public class Puzzle {
         return distance;
     }
 
-    private int getLinearConflict() {
-        int linearConflict = 0;
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                linearConflict += getLinearConflictForCell(i, j);
-            }
-        }
-        return linearConflict;
-    }
 
-    private int getCornerConflict() {
-        int cornerConflict = 0;
-        if (field[1] == 2 && field[size] == size + 1 && field[0] != 1) {
-            if (getLinearConflictForCell(0, 1) == 0 && getLinearConflictForCell(1, 0) == 0) {
-                cornerConflict += 2;
-            }
-        }
-        if (field[size - 2] == size - 1 && field[2 * size - 1] == 2 * size && field[size - 1] != size) {
-            if (getLinearConflictForCell(0, size - 2) == 0 && getLinearConflictForCell(1, size - 1) == 0) {
-                cornerConflict += 2;
-            }
-        }
-        if (field[(size - 2) * size] == (size - 2) * size + 1 && field[(size - 1) * size + 1] == (size - 1) * size + 2 && field[(size - 1) * size] != (size - 1) * size + 1) {
-            if (getLinearConflictForCell(size - 2, 0) == 0 && getLinearConflictForCell(size - 1, 1) == 0) {
-                cornerConflict += 2;
-            }
-        }
-        return cornerConflict;
-    }
-
-    private int getLinearConflictForCell(int currentI, int currentJ) {
-        int linearConflict = 0;
-        for (int k = currentI + 1; k < size; k++) {
-            if (field[currentI * 4 + currentJ] > field[k * 4 + currentJ] && (field[k * 4 + currentJ] - 1) % 4 == currentJ && (field[currentI * 4 + currentJ] - 1) % 4 == currentJ) {
-                linearConflict += 2;
-            }
-        }
-        for (int k = currentJ + 1; k < size; k++) {
-            if (field[currentI * 4 + currentJ] > field[currentI * 4 + k] && (field[currentI * 4 + k] - 1) / 4 == currentI && (field[currentI * 4 + currentJ] - 1) / 4 == currentI) {
-                linearConflict += 2;
-            }
-        }
-        return linearConflict;
-    }
-
-    public String toString() {
-        StringBuilder string = new StringBuilder();
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                string.append(field[i * size + j]).append(" ");
-            }
-            string.append("\n");
-        }
-        return string.toString();
-    }
 
     @Override
     public boolean equals(Object obj) {

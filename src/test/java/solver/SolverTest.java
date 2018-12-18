@@ -4,7 +4,6 @@ import org.junit.Test;
 import puzzle.Puzzle;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -85,7 +84,7 @@ public class SolverTest {
         input[15]=3;
         solution = Solver.getPuzzleSolution(new Puzzle(input));
         assertTrue(solution.get(solution.size()-1).isSolved());
-        assertEquals(solution.size(),47);
+        assertEquals(45,solution.size());
 
         solution = Solver.getPuzzleSolution(new Puzzle());
         assertTrue(solution.get(solution.size()-1).isSolved());
